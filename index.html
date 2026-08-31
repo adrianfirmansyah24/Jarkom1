@@ -445,14 +445,78 @@
   .slide-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: var(--cream); line-height: 1.35; }
 
   @media(max-width: 820px) {
-    .fig-wrap { flex-direction: column; }
+    .slide {
+      padding: 5vh 5vw;
+      overflow-y: auto;
+      justify-content: flex-start;
+      padding-top: 8vh;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--secondary) transparent;
+    }
+    .slide::-webkit-scrollbar { width: 4px; }
+    .slide::-webkit-scrollbar-track { background: transparent; }
+    .slide::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 4px; }
+    .fig-wrap { flex-direction: column; gap: 20px; }
     .fig-text { flex: none; }
-    .fig-img { height: 42vh; width: 100%; }
-    #s0 .members { grid-template-columns: 1fr 1fr; }
+    .fig-img { height: auto; max-height: 50vh; width: 100%; }
+    .fig-img img { max-height: 50vh; }
+    #s0 .members { grid-template-columns: 1fr 1fr; gap: 8px 16px; padding: 16px 18px; }
+    #s0 .foot-meta { position: relative; bottom: auto; left: auto; right: auto; margin-top: 24px; flex-direction: column; gap: 6px; text-align: center; }
     .arrow { width: 36px; height: 36px; font-size: 16px; }
     .arrow.prev { left: 10px; }
     .arrow.next { right: 10px; }
-    .top-controls { right: 4vw; }
+    .top-controls { right: 4vw; gap: 8px; }
+    .ctrl-btn { padding: 5px 10px; font-size: 11px; }
+    .progress-badge { font-size: 11px; padding: 5px 12px; }
+    h1 { font-size: clamp(26px, 7vw, 42px); }
+    h2 { font-size: clamp(22px, 5.5vw, 34px); }
+    p { font-size: 15px; }
+    .content-wrap { gap: 14px; }
+    .slide-kicker { font-size: 11px; margin-bottom: 10px; }
+    table { font-size: 11.5px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table thead, table tbody, table tr { display: table; width: 100%; table-layout: fixed; }
+    th, td { padding: 10px 12px; white-space: nowrap; }
+    .terminal-box { font-size: 11.5px; padding: 12px 14px; overflow-x: auto; }
+    .step-num { font-size: 44px; }
+    .tl-title { font-size: 15px; }
+    .tl-desc { font-size: 13px; }
+    .timeline { max-width: 100%; }
+    .nav { bottom: 16px; padding: 6px 14px; gap: 7px; }
+    .dot { width: 7px; height: 7px; }
+    #s0 { padding-bottom: 12vh; }
+    .slide-kicker { gap: 5px; }
+  }
+
+  @media(max-width: 480px) {
+    .slide { padding: 4vh 4vw; }
+    #s0 .members { grid-template-columns: 1fr; gap: 6px; font-size: 12px; padding: 14px 14px; }
+    h1 { font-size: clamp(22px, 6.5vw, 32px); }
+    h2 { font-size: clamp(20px, 5vw, 28px); }
+    p { font-size: 14px; line-height: 1.55; }
+    .top-controls { right: 3vw; top: 12px; gap: 6px; }
+    .ctrl-btn { padding: 4px 8px; font-size: 10px; border-radius: 14px; }
+    .progress-badge { font-size: 10px; padding: 4px 10px; border-radius: 14px; }
+    .arrow { width: 32px; height: 32px; font-size: 14px; }
+    .arrow.prev { left: 8px; }
+    .arrow.next { right: 8px; }
+    .fig-img { max-height: 40vh; }
+    .fig-img img { border-radius: 10px; }
+    .step-num { font-size: 36px; }
+    table { font-size: 10.5px; }
+    th, td { padding: 8px 10px; }
+    .subnetA, .subnetB { font-size: 10px; padding: 2px 8px; }
+    .terminal-box { font-size: 10.5px; padding: 10px 12px; }
+    .modal-overlay { padding: 20px 4vw; }
+    .modal-title { font-size: 20px; }
+    .overview-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .slide-card { padding: 12px; }
+    .slide-card-title { font-size: 12px; }
+    .slide-card-num { font-size: 10px; }
+    .tl-time { font-size: 11px; }
+    .tl-title { font-size: 14px; }
+    .tl-desc { font-size: 12px; }
+    .tl-item { padding-left: 28px; }
   }
 </style>
 </head>
@@ -810,16 +874,17 @@
 
   // Touch Swipe navigation
   let touchStartX = 0;
-  let touchEndX = 0;
+  let touchStartY = 0;
   document.addEventListener('touchstart', (e) => {
     touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
   }, false);
   document.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    if (touchEndX < touchStartX - 40) {
-      goTo(current + 1); // swipe left
-    } else if (touchEndX > touchStartX + 40) {
-      goTo(current - 1); // swipe right
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = Math.abs(e.changedTouches[0].screenY - touchStartY);
+    if (Math.abs(dx) > 40 && Math.abs(dx) > dy) {
+      if (dx < 0) goTo(current + 1);
+      else goTo(current - 1);
     }
   }, false);
 
