@@ -41,15 +41,12 @@
     flex-direction: column;
     justify-content: safe center;
     padding: 6vh 8vw 10vh;
-    opacity: 0;
+    opacity: 1;
     pointer-events: none;
-    transform: perspective(1400px) translateY(30px) scale(0.92) rotateX(4deg);
-    filter: blur(10px);
-    transition:
-      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-    transform-origin: center center;
+    transform: scale(1);
+    filter: blur(0);
+    transform-origin: 50% 50%;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     background:
       radial-gradient(circle at 80% 18%, var(--secondary-light), transparent 50%),
       radial-gradient(circle at 15% 85%, var(--primary-light), transparent 50%),
@@ -61,15 +58,30 @@
   }
   .slide::-webkit-scrollbar { display: none; }
 
+  /* state: slide is hidden (before it arrives) */
+  .slide.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.25);
+    filter: blur(14px);
+  }
+  /* state: slide is leaving (zoom toward a component) */
+  .slide.leaving {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(var(--exit-scale, 2.2));
+    filter: blur(16px);
+  }
+  /* state: slide is active and settled */
   .slide.active {
     opacity: 1;
     pointer-events: auto;
-    transform: perspective(1400px) translateY(0) scale(1) rotateX(0);
+    transform: scale(1);
     filter: blur(0);
   }
 
   .slide.active > * {
-    animation: contentIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: contentIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: calc(var(--idx, 0) * 55ms);
   }
 
@@ -865,28 +877,89 @@
   });
   const slideCards = document.querySelectorAll('.slide-card');
 
-  function goTo(i) {
-    if (i < 0 || i >= slides.length) return;
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
-    if (slideCards[current]) slideCards[current].classList.remove('active');
+  const TRANSITION_MS = 650;
+  let transitioning = false;
 
-    current = i;
+  // pick a component within a slide to zoom toward during the transition
+  function pickZoomTarget(slide) {
+    const selectors = [
+      'img', '.step-num', '.logo-mark', 'h1', 'h2',
+      '.members', 'table', '.timeline', '.terminal-box', 'p'
+    ];
+    for (const sel of selectors) {
+      const el = slide.querySelector(sel);
+      if (el) return el;
+    }
+    return slide;
+  }
 
-    const activeSlide = slides[current];
-    activeSlide.classList.add('active');
-    dots[current].classList.add('active');
-    if (slideCards[current]) slideCards[current].classList.add('active');
+  // set the slide's transform-origin to the center of a target element
+  function zoomToElement(slide, target) {
+    if (!target) return;
+    // measure at identity transform to get accurate element positions
+    const prevTransform = slide.style.transform;
+    slide.style.transform = 'scale(1)';
+    const slideRect = slide.getBoundingClientRect();
+    const tRect = target.getBoundingClientRect();
+    const cx = ((tRect.left + tRect.width / 2) - slideRect.left) / slideRect.width * 100;
+    const cy = ((tRect.top + tRect.height / 2) - slideRect.top) / slideRect.height * 100;
+    slide.style.transformOrigin = cx + '% ' + cy + '%';
+    slide.style.transform = prevTransform;
+  }
 
-    // set staggered index for child content animation
-    const children = activeSlide.children;
+  function setStagger(slide) {
+    const children = slide.children;
     const maxIdx = 8;
     for (let c = 0; c < children.length; c++) {
       children[c].style.setProperty('--idx', Math.min(c, maxIdx));
     }
+  }
 
-    bar.style.width = ((current + 1) / slides.length * 100) + '%';
-    progLabel.innerHTML = '<b>' + String(current + 1).padStart(2, '0') + '</b> / ' + slides.length;
+  function goTo(i) {
+    if (i < 0 || i >= slides.length || i === current || transitioning) return;
+
+    const from = slides[current];
+    const to = slides[i];
+    const fromTarget = pickZoomTarget(from);
+    const toTarget = pickZoomTarget(to);
+
+    // reset any leftover state on the incoming slide
+    to.classList.remove('leaving');
+    to.classList.add('hidden');
+    setStagger(to);
+    zoomToElement(to, toTarget);
+
+    // request frame so the hidden (blur) state is applied before animating in
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // mark fromSlide with exiting zoom and deactivate it
+        zoomToElement(from, fromTarget);
+        from.classList.remove('active');
+        from.classList.add('leaving');
+
+        dots[current].classList.remove('active');
+        if (slideCards[current]) slideCards[current].classList.remove('active');
+
+        current = i;
+
+        dots[current].classList.add('active');
+        if (slideCards[current]) slideCards[current].classList.add('active');
+        bar.style.width = ((current + 1) / slides.length * 100) + '%';
+        progLabel.innerHTML = '<b>' + String(current + 1).padStart(2, '0') + '</b> / ' + slides.length;
+
+        transitioning = true;
+        setTimeout(() => {
+          // settle outgoing slide back to hidden; reveal incoming as active (zoom-back)
+          from.classList.remove('leaving');
+          from.classList.toggle('hidden', true);
+
+          to.classList.remove('hidden');
+          to.classList.add('active');
+
+          transitioning = false;
+        }, TRANSITION_MS);
+      });
+    });
   }
 
   function toggleOverview() {
@@ -927,7 +1000,24 @@
     } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'ArrowUp' || e.key === 'Backspace') {
       goTo(current - 1);
     } else if (e.key === 'Home') {
-      goTo(0);
+  // initialize first slide and hide the rest
+  function initSlides() {
+    slides.forEach((s, idx) => {
+      s.classList.remove('active', 'leaving', 'hidden');
+      if (idx === 0) {
+        s.classList.add('active');
+      } else {
+        s.classList.add('hidden');
+      }
+    });
+    current = 0;
+    setStagger(slides[0]);
+    dots[current].classList.add('active');
+    if (slideCards[current]) slideCards[current].classList.add('active');
+    bar.style.width = ((current + 1) / slides.length * 100) + '%';
+    progLabel.innerHTML = '<b>' + String(current + 1).padStart(2, '0') + '</b> / ' + slides.length;
+  }
+  initSlides();
     } else if (e.key === 'End') {
       goTo(slides.length - 1);
     } else if (e.key === 'f' || e.key === 'F') {
