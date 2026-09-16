@@ -1731,8 +1731,8 @@
             💡 <strong>Analogi Sederhana untuk Awam:</strong><br />
             "Membangun jaringan inter-subnet itu seperti menghubungkan dua
             komplek perumahan berbeda kota. Komputer adalah rumahnya, kabel
-            adalah jalannya, IP adalah nomor rumahnya, dan **Router adalah
-            gerbang tol utama** yang menghubungkan kedua kota tersebut!"
+            adalah jalannya, IP adalah nomor rumahnya, dan <strong>Router adalah
+            gerbang tol utama</strong> yang menghubungkan kedua kota tersebut!"
           </div>
 
           <div
@@ -1851,8 +1851,8 @@
 
             <div class="analogy-box">
               💡 <strong>Penjelasan Bahasa Awam:</strong><br />
-              "Jaringan kita dibagi jadi 2 area utama: **Subnet A** (kiri)
-              tempat PC0 & PC1 berkumpul via Hub0, dan **Subnet B** (kanan)
+              "Jaringan kita dibagi jadi 2 area utama: <strong>Subnet A</strong> (kiri)
+              tempat PC0 & PC1 berkumpul via Hub0, dan <strong>Subnet B</strong> (kanan)
               tempat PC2 & PC3 berkumpul via Switch0."
             </div>
           </div>
@@ -1960,8 +1960,8 @@
                 💡 Alasan Kabel Copper Straight-Through
               </h3>
               <p class="card-text">
-                Kabel **Straight-Through** dipakai karena menghubungkan dua
-                jenis perangkat yang **berbeda layer OSI** (misal: PC ke
+                Kabel <strong>Straight-Through</strong> dipakai karena menghubungkan dua
+                jenis perangkat yang <strong>berbeda layer OSI</strong> (misal: PC ke
                 Hub/Switch, atau Switch ke Router).
               </p>
             </div>
@@ -2140,7 +2140,7 @@
           <div class="card card-accent-sand">
             <h3 class="card-title">🔑 Prinsip Utama Inter-Subnet</h3>
             <p class="card-text">
-              Router2 harus memiliki **2 kaki interface terpisah**:
+              Router2 harus memiliki <strong>2 kaki interface terpisah</strong>:
             </p>
             <ul
               style="
@@ -2167,7 +2167,7 @@
 
           <div class="analogy-box">
             💡 <strong>Analogi Bahasa Awam:</strong><br />
-            "Router2 ini ibarat **pintu gerbang perbatasan**. Kaki kiri di kota
+            "Router2 ini ibarat <strong>pintu gerbang perbatasan</strong>. Kaki kiri di kota
             Subnet A, kaki kanan di kota Subnet B. Tanpa pintu gerbang ini,
             warga PC0 tak bisa main ke rumah PC3!"
           </div>
@@ -2221,7 +2221,7 @@
 
             <div class="analogy-box">
               💡 <strong>Penjelasan Bahasa Awam:</strong><br />
-              "Ketik `no shutdown` itu ibarat **membuka kunci gerbang tol**.
+              "Ketik `no shutdown` itu ibarat <strong>membuka kunci gerbang tol</strong>.
               Kalau lupa diketik, gerbangnya tetap terkunci (DOWN) dan sinyal
               tak bisa lewat!"
             </div>
@@ -2670,7 +2670,7 @@
               style="padding: 10px 12px; border-left: 3px solid var(--c-sand)"
             >
               <strong>2. Router2 Layer 3 (0.003s):</strong> Router2 mencocokkan
-              IP tujuan, **menurunkan nilai TTL (128 ➔ 127)**, lalu meneruskan
+              IP tujuan, <strong>menurunkan nilai TTL (128 ➔ 127)</strong>, lalu meneruskan
               ke Switch0.
             </div>
 
@@ -2682,7 +2682,7 @@
               "
             >
               <strong>3. Switch0 Unicast (0.005s):</strong> Switch0 secara
-              pintar meneruskan paket **hanya ke PC3** (isolasi collision
+              pintar meneruskan paket <strong>hanya ke PC3</strong> (isolasi collision
               domain).
             </div>
           </div>
@@ -2755,10 +2755,10 @@
 
             <div class="analogy-box">
               💡 <strong>Penjelasan Bahasa Awam Latensi ARP:</strong><br />
-              "Kenapa ping pertama ada 1x *Request Timed Out*? Ibarat dua orang
+              "Kenapa ping pertama ada 1x <strong>Request Timed Out</strong>? Ibarat dua orang
               baru pertama kenalan — butuh waktu beberapa detik untuk jabat
               tangan (tukar MAC Address via ARP). Setelah saling kenal, ping
-              berikutnya **100% Reply tanpa hambatan!**"
+              berikutnya <strong>100% Reply tanpa hambatan!</strong>"
             </div>
           </div>
         </div>
@@ -2844,8 +2844,8 @@
               <h3 class="card-title">📊 Evaluasi Hasil Praktikum</h3>
               <p class="card-text" style="line-height: 1.6">
                 Pengujian konektivitas penuh membuktikan bahwa seluruh PC di
-                dalam jaringan (Subnet A & Subnet B) telah **terhubung
-                sempurna**. Router2 berfungsi penuh sebagai gateway perutean IP
+                dalam jaringan (Subnet A & Subnet B) telah <strong>terhubung
+                sempurna</strong>. Router2 berfungsi penuh sebagai gateway perutean IP
                 Layer 3!
               </p>
             </div>
@@ -2883,8 +2883,8 @@
                 1. Peran Router Layer 3
               </h4>
               <p style="font-size: 0.85rem; color: var(--c-text-muted)">
-                Dua segmen LAN berbeda (Subnet A & Subnet B) **wajib dihubungkan
-                oleh Router** untuk meneruskan paket antar network IP.
+                Dua segmen LAN berbeda (Subnet A & Subnet B) <strong>wajib dihubungkan
+                oleh Router</strong> untuk meneruskan paket antar network IP.
               </p>
             </div>
 
@@ -2931,7 +2931,7 @@
                 4. Latensi Pemetaan ARP
               </h4>
               <p style="font-size: 0.85rem; color: var(--c-text-muted)">
-                Ping pertama dapat mengalami 1x *Request Timed Out* karena
+                Ping pertama dapat mengalami 1x <strong>Request Timed Out</strong> karena
                 resolusi ARP, lalu diikuti 100% reply pada tes berikutnya.
               </p>
             </div>
